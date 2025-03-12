@@ -1,5 +1,13 @@
-package com.example.examplemod;
+package xyz.anonym.create_print_and_paint;
 
+import com.simibubi.create.foundation.blockEntity.IMultiBlockEntityContainer;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.*;
+import net.minecraft.world.level.material.*;
+import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
+import net.neoforged.neoforge.registries.*;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
@@ -9,14 +17,9 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.food.FoodProperties;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.CreativeModeTabs;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.material.MapColor;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -29,17 +32,13 @@ import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
-import net.neoforged.neoforge.registries.DeferredBlock;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredItem;
-import net.neoforged.neoforge.registries.DeferredRegister;
 
 // The value here should match an entry in the META-INF/neoforge.mods.toml file
-@Mod(ExampleMod.MODID)
-public class ExampleMod
+@Mod(xyz.anonym.create_print_and_paint.Create_Paint_and_Print.MODID)
+public class Create_Paint_and_Print
 {
     // Define mod id in a common place for everything to reference
-    public static final String MODID = "examplemod";
+    public static final String MODID = "create_print_and_paint";
     // Directly reference a slf4j logger
     private static final Logger LOGGER = LogUtils.getLogger();
     // Create a Deferred Register to hold Blocks which will all be registered under the "examplemod" namespace
@@ -48,7 +47,6 @@ public class ExampleMod
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
     // Create a Deferred Register to hold CreativeModeTabs which will all be registered under the "examplemod" namespace
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
-
     // Creates a new Block with the id "examplemod:example_block", combining the namespace and path
     public static final DeferredBlock<Block> EXAMPLE_BLOCK = BLOCKS.registerSimpleBlock("example_block", BlockBehaviour.Properties.of().mapColor(MapColor.STONE));
     // Creates a new BlockItem with the id "examplemod:example_block", combining the namespace and path
@@ -57,19 +55,128 @@ public class ExampleMod
     // Creates a new food item with the id "examplemod:example_id", nutrition 1 and saturation 2
     public static final DeferredItem<Item> EXAMPLE_ITEM = ITEMS.registerSimpleItem("example_item", new Item.Properties().food(new FoodProperties.Builder()
             .alwaysEdible().nutrition(1).saturationModifier(2f).build()));
-
+    public static final DeferredItem<Item> EMPTY_CAN = ITEMS.registerItem(
+            "empty_can",
+            Item::new,
+            new Item.Properties()
+    );
+    public static final DeferredItem<Item> RED_SPRAY_CAN = ITEMS.registerItem(
+            "red_spray_can",
+            Item::new,
+            new Item.Properties()
+    );
+    public static final DeferredItem<Item> BLUE_SPRAY_CAN = ITEMS.registerItem(
+            "blue_spray_can",
+            Item::new,
+            new Item.Properties()
+    );
+    public static final DeferredItem<Item> WHITE_SPRAY_CAN = ITEMS.registerItem(
+            "white_spray_can",
+            Item::new,
+            new Item.Properties()
+    );
+    public static final DeferredItem<Item> GRAY_SPRAY_CAN = ITEMS.registerItem(
+            "gray_spray_can",
+            Item::new,
+            new Item.Properties()
+    );
+    public static final DeferredItem<Item> LIGHT_GRAY_SPRAY_CAN = ITEMS.registerItem(
+            "light_gray_spray_can",
+            Item::new,
+            new Item.Properties()
+    );
+    public static final DeferredItem<Item> BLACK_SPRAY_CAN = ITEMS.registerItem(
+            "black_spray_can",
+            Item::new,
+            new Item.Properties()
+    );
+    public static final DeferredItem<Item> BROWN_SPRAY_CAN = ITEMS.registerItem(
+            "brown_spray_can",
+            Item::new,
+            new Item.Properties()
+    );
+    public static final DeferredItem<Item> ORANGE_SPRAY_CAN = ITEMS.registerItem(
+            "orange_spray_can",
+            Item::new,
+            new Item.Properties()
+    );
+    public static final DeferredItem<Item> YELLLOW_SPRAY_CAN = ITEMS.registerItem(
+            "yellow_spray_can",
+            Item::new,
+            new Item.Properties()
+    );
+    public static final DeferredItem<Item> LIME_SPRAY_CAN = ITEMS.registerItem(
+            "lime_spray_can",
+            Item::new,
+            new Item.Properties()
+    );
+    public static final DeferredItem<Item> GREEN_SPRAY_CAN = ITEMS.registerItem(
+            "green_spray_can",
+            Item::new,
+            new Item.Properties()
+    );
+    public static final DeferredItem<Item> CYAN_SPRAY_CAN = ITEMS.registerItem(
+            "cyan_spray_can",
+            Item::new,
+            new Item.Properties()
+    );
+    public static final DeferredItem<Item> LIGHT_BLUE_SPRAY_CAN = ITEMS.registerItem(
+            "light_blue_spray_can",
+            Item::new,
+            new Item.Properties()
+    );
+    public static final DeferredItem<Item> PURPLE_SPRAY_CAN = ITEMS.registerItem(
+            "purple_spray_can",
+            Item::new,
+            new Item.Properties()
+    );
+    public static final DeferredItem<Item> MAGENTA_SPRAY_CAN = ITEMS.registerItem(
+            "magenta_spray_can",
+            Item::new,
+            new Item.Properties()
+    );
+    public static final DeferredItem<Item> PINK_SPRAY_CAN = ITEMS.registerItem(
+            "pink_spray_can",
+            Item::new,
+            new Item.Properties()
+    );
+    @SubscribeEvent
+    public void register(RegisterEvent event) {
+        event.register(BuiltInRegistries.FLUID,
+        registry -> {
+            registry.register(ResourceLocation.fromNamespaceAndPath(MODID, "paint_ingredient"), );
+        }
+        );
+    }
     // Creates a creative tab with the id "examplemod:example_tab" for the example item, that is placed after the combat tab
-    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> EXAMPLE_TAB = CREATIVE_MODE_TABS.register("example_tab", () -> CreativeModeTab.builder()
-            .title(Component.translatable("itemGroup.examplemod")) //The language key for the title of your CreativeModeTab
+    @SuppressWarnings("unused")
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> EXAMPLE_TAB = CREATIVE_MODE_TABS.register("create_print_and_paint", () -> CreativeModeTab.builder()
+            .title(Component.translatable("itemGroup.create_print_and_paint")) //The language key for the title of your CreativeModeTab
             .withTabsBefore(CreativeModeTabs.COMBAT)
-            .icon(() -> EXAMPLE_ITEM.get().getDefaultInstance())
+            .icon(() -> EMPTY_CAN.get().getDefaultInstance())
             .displayItems((parameters, output) -> {
-                output.accept(EXAMPLE_ITEM.get()); // Add the example item to the tab. For your own tabs, this method is preferred over the event
+                output.accept(EMPTY_CAN.get());
+                output.accept(RED_SPRAY_CAN.get());
+                output.accept(BLUE_SPRAY_CAN.get());
+                output.accept(WHITE_SPRAY_CAN.get());
+                output.accept(GRAY_SPRAY_CAN.get());
+                output.accept(LIGHT_GRAY_SPRAY_CAN.get());
+                output.accept(BLACK_SPRAY_CAN.get());
+                output.accept(BROWN_SPRAY_CAN.get());
+                output.accept(ORANGE_SPRAY_CAN.get());
+                output.accept(YELLLOW_SPRAY_CAN.get());
+                output.accept(LIME_SPRAY_CAN.get());
+                output.accept(GREEN_SPRAY_CAN.get());
+                output.accept(CYAN_SPRAY_CAN.get());
+                output.accept(LIGHT_BLUE_SPRAY_CAN.get());
+                output.accept(PURPLE_SPRAY_CAN.get());
+                output.accept(MAGENTA_SPRAY_CAN.get());
+                output.accept(PINK_SPRAY_CAN.get());
             }).build());
 
     // The constructor for the mod class is the first code that is run when your mod is loaded.
     // FML will recognize some parameter types like IEventBus or ModContainer and pass them in automatically.
-    public ExampleMod(IEventBus modEventBus, ModContainer modContainer)
+    public Create_Paint_and_Print(IEventBus modEventBus, ModContainer modContainer)
     {
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
@@ -100,17 +207,12 @@ public class ExampleMod
 
         if (Config.logDirtBlock)
             LOGGER.info("DIRT BLOCK >> {}", BuiltInRegistries.BLOCK.getKey(Blocks.DIRT));
-
-        LOGGER.info(Config.magicNumberIntroduction + Config.magicNumber);
-
-        Config.items.forEach((item) -> LOGGER.info("ITEM >> {}", item.toString()));
     }
 
     // Add the example block item to the building blocks tab
     private void addCreative(BuildCreativeModeTabContentsEvent event)
     {
-        if (event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS)
-            event.accept(EXAMPLE_BLOCK_ITEM);
+
     }
 
     // You can use SubscribeEvent and let the Event Bus discover methods to call

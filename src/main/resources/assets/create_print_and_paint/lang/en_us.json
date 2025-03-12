@@ -1,0 +1,22 @@
+{
+  "block.create_print_and_paint.example_block": "Example Block",
+  "item.create_print_and_paint.example_item": "Example Item",
+  "itemGroup.create_print_and_paint": "Create: Print 'n Paint",
+  "item.create_print_and_paint.empty_can": "Empty Can",
+  "item.create_print_and_paint.red_spray_can": "Red Spray Can",
+  "item.create_print_and_paint.blue_spray_can": "Blue Spray Can",
+  "item.create_print_and_paint.white_spray_can": "White Spray Can",
+  "item.create_print_and_paint.gray_spray_can": "Gray Spray Can",
+  "item.create_print_and_paint.light_gray_spray_can": "Light Gray Spray Can",
+  "item.create_print_and_paint.black_spray_can": "Black Spray Can",
+  "item.create_print_and_paint.brown_spray_can": "Brown Spray Can",
+  "item.create_print_and_paint.orange_spray_can": "Orange Spray Can",
+  "item.create_print_and_paint.yellow_spray_can": "Yellow Spray Can",
+  "item.create_print_and_paint.lime_spray_can": "Lime Spray Can",
+  "item.create_print_and_paint.green_spray_can": "Green Spray Can",
+  "item.create_print_and_paint.cyan_spray_can": "Cyan Spray Can",
+  "item.create_print_and_paint.light_blue_spray_can": "Light Blue Spray Can",
+  "item.create_print_and_paint.purple_spray_can": "Purple Spray Can",
+  "item.create_print_and_paint.magenta_spray_can": "Magenta Spray Can",
+  "item.create_print_and_paint.pink_spray_can": "Pink Spray Can"
+}
