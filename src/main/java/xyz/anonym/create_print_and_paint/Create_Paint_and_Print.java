@@ -1,12 +1,10 @@
 package xyz.anonym.create_print_and_paint;
 
-import com.simibubi.create.foundation.blockEntity.IMultiBlockEntityContainer;
-import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.material.*;
+import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 import net.neoforged.neoforge.fluids.FluidType;
-import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import net.neoforged.neoforge.registries.*;
 import org.slf4j.Logger;
 
@@ -51,6 +49,9 @@ public class Create_Paint_and_Print
     public static final DeferredBlock<Block> EXAMPLE_BLOCK = BLOCKS.registerSimpleBlock("example_block", BlockBehaviour.Properties.of().mapColor(MapColor.STONE));
     // Creates a new BlockItem with the id "examplemod:example_block", combining the namespace and path
     public static final DeferredItem<BlockItem> EXAMPLE_BLOCK_ITEM = ITEMS.registerSimpleBlockItem("example_block", EXAMPLE_BLOCK);
+    public static final DeferredHolder<FluidType, FluidType> PAINT_INGREDIENT_TYPE = DeferredHolder.create(NeoForgeRegistries.Keys.FLUID_TYPES, ResourceLocation.withDefaultNamespace("paint_ingredient"));
+    public static final DeferredHolder<Fluid, Fluid> PAINT_INGREDIENT = DeferredHolder.create(Registries.FLUID, ResourceLocation.withDefaultNamespace("paint_ingredient"));
+    public static final DeferredHolder<Fluid, Fluid> FLOWING_PAINT_INGREDIENT = DeferredHolder.create(Registries.FLUID, ResourceLocation.withDefaultNamespace("flowing_paint_ingredient"));
 
     // Creates a new food item with the id "examplemod:example_id", nutrition 1 and saturation 2
     public static final DeferredItem<Item> EXAMPLE_ITEM = ITEMS.registerSimpleItem("example_item", new Item.Properties().food(new FoodProperties.Builder()
@@ -140,13 +141,15 @@ public class Create_Paint_and_Print
             Item::new,
             new Item.Properties()
     );
-    @SubscribeEvent
+    public static Item BUCKET_OF_PAINT_INGREDIENT;
     public void register(RegisterEvent event) {
-        event.register(BuiltInRegistries.FLUID,
+        event.register(Registries.FLUID,
         registry -> {
-            registry.register(ResourceLocation.fromNamespaceAndPath(MODID, "paint_ingredient"), );
-        }
-        );
+            BaseFlowingFluid.Properties properties = new BaseFlowingFluid.Properties(PAINT_INGREDIENT_TYPE::value, PAINT_INGREDIENT::value, FLOWING_PAINT_INGREDIENT::value).bucket(() -> BUCKET_OF_PAINT_INGREDIENT);
+
+            registry.register(PAINT_INGREDIENT.getId(), new BaseFlowingFluid.Source(properties));
+            registry.register(FLOWING_PAINT_INGREDIENT.getId(), new BaseFlowingFluid.Flowing(properties));
+        });
     }
     // Creates a creative tab with the id "examplemod:example_tab" for the example item, that is placed after the combat tab
     @SuppressWarnings("unused")
