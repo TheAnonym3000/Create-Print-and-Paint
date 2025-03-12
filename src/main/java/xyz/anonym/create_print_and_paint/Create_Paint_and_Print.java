@@ -1,5 +1,6 @@
 package xyz.anonym.create_print_and_paint;
 
+import com.google.common.eventbus.Subscribe;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.material.*;
@@ -210,6 +211,7 @@ public class Create_Paint_and_Print
 
         if (Config.logDirtBlock)
             LOGGER.info("DIRT BLOCK >> {}", BuiltInRegistries.BLOCK.getKey(Blocks.DIRT));
+
     }
 
     // Add the example block item to the building blocks tab
