@@ -1,25 +1,35 @@
 package xyz.anonym.create_print_and_paint;
 
-import com.simibubi.create.foundation.item.CountedItemStackList;
-import net.minecraft.core.Registry;
+import com.mojang.blaze3d.shaders.FogShape;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.simibubi.create.AllTags;
+import com.simibubi.create.foundation.data.CreateRegistrate;
+import com.simibubi.create.foundation.item.ItemDescription;
+import com.simibubi.create.foundation.item.KineticStats;
+import com.simibubi.create.foundation.item.TooltipModifier;
+import com.simibubi.create.infrastructure.config.AllConfigs;
+import com.tterrag.registrate.builders.FluidBuilder;
+import com.tterrag.registrate.util.entry.FluidEntry;
+import net.createmod.catnip.lang.FontHelper;
+import net.createmod.catnip.theme.Color;
+import net.minecraft.client.Camera;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.FogRenderer;
+import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.*;
+import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.material.*;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.client.event.InputEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
-import net.neoforged.neoforge.fluids.FluidUtil;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.fluids.capability.templates.FluidHandlerItemStack;
 import net.neoforged.neoforge.registries.*;
+import org.jetbrains.annotations.NotNull;
+import org.joml.Vector3f;
 import org.slf4j.Logger;
-
 import com.mojang.logging.LogUtils;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -41,10 +51,12 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
 // The value here should match an entry in the META-INF/neoforge.mods.toml file
 @Mod(xyz.anonym.create_print_and_paint.Create_Paint_and_Print.MODID)
-public class Create_Paint_and_Print
-{
+public class Create_Paint_and_Print {
     // Define mod id in a common place for everything to reference
     public static final String MODID = "create_print_and_paint";
     // Directly reference a slf4j logger
@@ -55,14 +67,16 @@ public class Create_Paint_and_Print
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
     // Create a Deferred Register to hold CreativeModeTabs which will all be registered under the "examplemod" namespace
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
+    private static final CreateRegistrate REGISTRATE = CreateRegistrate.create(MODID)
+            .defaultCreativeTab((ResourceKey<CreativeModeTab>) null)
+            .setTooltipModifierFactory(item ->
+                    new ItemDescription.Modifier(item, FontHelper.Palette.STANDARD_CREATE)
+                            .andThen(TooltipModifier.mapNull(KineticStats.create(item)))
+            );
     // Creates a new Block with the id "examplemod:example_block", combining the namespace and path
     public static final DeferredBlock<Block> EXAMPLE_BLOCK = BLOCKS.registerSimpleBlock("example_block", BlockBehaviour.Properties.of().mapColor(MapColor.STONE));
     // Creates a new BlockItem with the id "examplemod:example_block", combining the namespace and path
     public static final DeferredItem<BlockItem> EXAMPLE_BLOCK_ITEM = ITEMS.registerSimpleBlockItem("example_block", EXAMPLE_BLOCK);
-    public static final DeferredHolder<FluidType, FluidType> PAINT_INGREDIENT_TYPE = DeferredHolder.create(NeoForgeRegistries.Keys.FLUID_TYPES, ResourceLocation.withDefaultNamespace("paint_ingredient"));
-    public static final DeferredHolder<Fluid, Fluid> PAINT_INGREDIENT = DeferredHolder.create(Registries.FLUID, ResourceLocation.withDefaultNamespace("paint_ingredient"));
-    public static final DeferredHolder<Fluid, Fluid> FLOWING_PAINT_INGREDIENT = DeferredHolder.create(Registries.FLUID, ResourceLocation.withDefaultNamespace("flowing_paint_ingredient"));
-
     // Creates a new food item with the id "examplemod:example_id", nutrition 1 and saturation 2
     public static final DeferredItem<Item> EXAMPLE_ITEM = ITEMS.registerSimpleItem("example_item", new Item.Properties().food(new FoodProperties.Builder()
             .alwaysEdible().nutrition(1).saturationModifier(2f).build()));
@@ -156,20 +170,21 @@ public class Create_Paint_and_Print
             Item::new,
             new Item.Properties()
     );
-    public void registerFluid(RegisterEvent event) {
-        event.register(NeoForgeRegistries.FLUID_TYPES.key(), helper -> helper.register(PAINT_INGREDIENT_TYPE.unwrapKey().orElseThrow(), new FluidType(
-                FluidType.Properties.create().viscosity(1555).density(1555)
-        )));
-        event.register(Registries.FLUID,
-        registry -> {
-            BaseFlowingFluid.Properties properties = new BaseFlowingFluid.Properties(PAINT_INGREDIENT_TYPE::value, PAINT_INGREDIENT::value, FLOWING_PAINT_INGREDIENT::value).bucket(() -> BUCKET_OF_PAINT_INGREDIENT.asItem());
+    public static final FluidEntry<BaseFlowingFluid.Flowing> PAINT_INGREDIENT =
+            REGISTRATE.standardFluid("paint_ingredient",
+                           SolidRenderedPlaceableFluidType.create(0x622020,
+                                    () -> 1f / 32f))
+                    .lang("Paint Ingredient")
+                    .properties(b -> b.viscosity(1500)
+                            .density(1400))
+                    .fluidProperties(p -> p.levelDecreasePerBlock(2)
+                            .tickRate(25)
+                            .slopeFindDistance(3)
+                            .explosionResistance(100f))
+                    .register();
 
-            registry.register(PAINT_INGREDIENT.getId(), new BaseFlowingFluid.Source(properties));
-            registry.register(FLOWING_PAINT_INGREDIENT.getId(), new BaseFlowingFluid.Flowing(properties));
-        });
-    }
     @SuppressWarnings("unused")
-    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> EXAMPLE_TAB = CREATIVE_MODE_TABS.register("create_print_and_paint", () -> CreativeModeTab.builder()
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> CREATE_PRINT_AND_PAINT_CREATIVE_MODE_TAB = CREATIVE_MODE_TABS.register("create_print_and_paint", () -> CreativeModeTab.builder()
             .title(Component.translatable("itemGroup.create_print_and_paint")) //The language key for the title of your CreativeModeTab
             .withTabsBefore(CreativeModeTabs.COMBAT)
             .icon(() -> EMPTY_CAN.get().getDefaultInstance())
@@ -193,14 +208,16 @@ public class Create_Paint_and_Print
                 output.accept(PINK_SPRAY_CAN.get());
                 output.accept(BUCKET_OF_PAINT_INGREDIENT.get());
             }).build());
-
+    static {
+        REGISTRATE.setCreativeTab(CREATE_PRINT_AND_PAINT_CREATIVE_MODE_TAB);
+    }
     // The constructor for the mod class is the first code that is run when your mod is loaded.
     // FML will recognize some parameter types like IEventBus or ModContainer and pass them in automatically.
     public Create_Paint_and_Print(IEventBus modEventBus, ModContainer modContainer)
     {
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
-
+        REGISTRATE.registerEventListeners(modEventBus);
         // Register the Deferred Register to the mod event bus so blocks get registered
         BLOCKS.register(modEventBus);
         // Register the Deferred Register to the mod event bus so items get registered
@@ -214,7 +231,6 @@ public class Create_Paint_and_Print
 
         // Register the item to a creative tab
         modEventBus.addListener(this::addCreative);
-        modEventBus.addListener(this::registerFluid);
         // Register our mod's ModConfigSpec so that FML can create and load the config file for us
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
@@ -254,5 +270,122 @@ public class Create_Paint_and_Print
             LOGGER.info("HELLO FROM CLIENT SETUP");
             LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
         }
+    }
+    public static abstract class TintedFluidType extends FluidType {
+
+        protected static final int NO_TINT = 0xffffffff;
+        private ResourceLocation stillTexture;
+        private ResourceLocation flowingTexture;
+
+        public TintedFluidType(Properties properties, ResourceLocation stillTexture, ResourceLocation flowingTexture) {
+            super(properties);
+            this.stillTexture = stillTexture;
+            this.flowingTexture = flowingTexture;
+        }
+        @SuppressWarnings("removal")
+        @Override
+        public void initializeClient(Consumer<IClientFluidTypeExtensions> consumer) {
+            consumer.accept(new IClientFluidTypeExtensions() {
+
+                @Override
+                public ResourceLocation getStillTexture() {
+                    return stillTexture;
+                }
+
+                @Override
+                public ResourceLocation getFlowingTexture() {
+                    return flowingTexture;
+                }
+
+                @Override
+                public int getTintColor(FluidStack stack) {
+                    return TintedFluidType.this.getTintColor(stack);
+                }
+
+                @Override
+                public int getTintColor(FluidState state, BlockAndTintGetter getter, BlockPos pos) {
+                    return TintedFluidType.this.getTintColor(state, getter, pos);
+                }
+
+                @Override
+                public @NotNull Vector3f modifyFogColor(Camera camera, float partialTick, ClientLevel level,
+                                                        int renderDistance, float darkenWorldAmount, Vector3f fluidFogColor) {
+                    Vector3f customFogColor = TintedFluidType.this.getCustomFogColor();
+                    return customFogColor == null ? fluidFogColor : customFogColor;
+                }
+
+                @Override
+                public void modifyFogRender(Camera camera, FogRenderer.FogMode mode, float renderDistance, float partialTick,
+                                            float nearDistance, float farDistance, FogShape shape) {
+                    float modifier = TintedFluidType.this.getFogDistanceModifier();
+                    float baseWaterFog = 96.0f;
+                    if (modifier != 1f) {
+                        RenderSystem.setShaderFogShape(FogShape.CYLINDER);
+                        RenderSystem.setShaderFogStart(-8);
+                        RenderSystem.setShaderFogEnd(baseWaterFog * modifier);
+                    }
+                }
+
+            });
+        }
+
+        protected abstract int getTintColor(FluidStack stack);
+
+        protected abstract int getTintColor(FluidState state, BlockAndTintGetter getter, BlockPos pos);
+
+        protected Vector3f getCustomFogColor() {
+            return null;
+        }
+
+        protected float getFogDistanceModifier() {
+            return 1f;
+        }
+
+    }
+
+    private static class SolidRenderedPlaceableFluidType extends TintedFluidType {
+
+        private Vector3f fogColor;
+        private Supplier<Float> fogDistance;
+
+        public static FluidBuilder.FluidTypeFactory create(int fogColor, Supplier<Float> fogDistance) {
+            return (p, s, f) -> {
+                SolidRenderedPlaceableFluidType fluidType = new SolidRenderedPlaceableFluidType(p, s, f);
+                fluidType.fogColor = new Color(fogColor, false).asVectorF();
+                fluidType.fogDistance = fogDistance;
+                return fluidType;
+            };
+        }
+
+        private SolidRenderedPlaceableFluidType(Properties properties, ResourceLocation stillTexture,
+                                                ResourceLocation flowingTexture) {
+            super(properties, stillTexture, flowingTexture);
+        }
+
+        @Override
+        protected int getTintColor(FluidStack stack) {
+            return NO_TINT;
+        }
+
+        /*
+         * Removing alpha from tint prevents optifine from forcibly applying biome
+         * colors to modded fluids (this workaround only works for fluids in the solid
+         * render layer)
+         */
+        @Override
+        public int getTintColor(FluidState state, BlockAndTintGetter world, BlockPos pos) {
+            return 0x00ffffff;
+        }
+
+        @Override
+        protected Vector3f getCustomFogColor() {
+            return fogColor;
+        }
+
+        @Override
+        protected float getFogDistanceModifier() {
+            return fogDistance.get();
+        }
+
     }
 }
