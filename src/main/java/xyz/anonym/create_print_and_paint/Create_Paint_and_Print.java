@@ -1,11 +1,20 @@
 package xyz.anonym.create_print_and_paint;
 
-import com.google.common.eventbus.Subscribe;
+import com.simibubi.create.foundation.item.CountedItemStackList;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.material.*;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.client.event.InputEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.fluids.BaseFlowingFluid;
+import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.fluids.FluidUtil;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.templates.FluidHandlerItemStack;
 import net.neoforged.neoforge.registries.*;
 import org.slf4j.Logger;
 
@@ -102,7 +111,7 @@ public class Create_Paint_and_Print
             Item::new,
             new Item.Properties()
     );
-    public static final DeferredItem<Item> YELLLOW_SPRAY_CAN = ITEMS.registerItem(
+    public static final DeferredItem<Item> YELLOW_SPRAY_CAN = ITEMS.registerItem(
             "yellow_spray_can",
             Item::new,
             new Item.Properties()
@@ -142,17 +151,23 @@ public class Create_Paint_and_Print
             Item::new,
             new Item.Properties()
     );
-    public static Item BUCKET_OF_PAINT_INGREDIENT;
-    public void register(RegisterEvent event) {
+    public static final DeferredItem<Item> BUCKET_OF_PAINT_INGREDIENT = ITEMS.registerItem(
+            "bucket_of_paint_ingredient",
+            Item::new,
+            new Item.Properties()
+    );
+    public void registerFluid(RegisterEvent event) {
+        event.register(NeoForgeRegistries.FLUID_TYPES.key(), helper -> helper.register(PAINT_INGREDIENT_TYPE.unwrapKey().orElseThrow(), new FluidType(
+                FluidType.Properties.create().viscosity(1555).density(1555)
+        )));
         event.register(Registries.FLUID,
         registry -> {
-            BaseFlowingFluid.Properties properties = new BaseFlowingFluid.Properties(PAINT_INGREDIENT_TYPE::value, PAINT_INGREDIENT::value, FLOWING_PAINT_INGREDIENT::value).bucket(() -> BUCKET_OF_PAINT_INGREDIENT);
+            BaseFlowingFluid.Properties properties = new BaseFlowingFluid.Properties(PAINT_INGREDIENT_TYPE::value, PAINT_INGREDIENT::value, FLOWING_PAINT_INGREDIENT::value).bucket(() -> BUCKET_OF_PAINT_INGREDIENT.asItem());
 
             registry.register(PAINT_INGREDIENT.getId(), new BaseFlowingFluid.Source(properties));
             registry.register(FLOWING_PAINT_INGREDIENT.getId(), new BaseFlowingFluid.Flowing(properties));
         });
     }
-    // Creates a creative tab with the id "examplemod:example_tab" for the example item, that is placed after the combat tab
     @SuppressWarnings("unused")
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> EXAMPLE_TAB = CREATIVE_MODE_TABS.register("create_print_and_paint", () -> CreativeModeTab.builder()
             .title(Component.translatable("itemGroup.create_print_and_paint")) //The language key for the title of your CreativeModeTab
@@ -168,7 +183,7 @@ public class Create_Paint_and_Print
                 output.accept(BLACK_SPRAY_CAN.get());
                 output.accept(BROWN_SPRAY_CAN.get());
                 output.accept(ORANGE_SPRAY_CAN.get());
-                output.accept(YELLLOW_SPRAY_CAN.get());
+                output.accept(YELLOW_SPRAY_CAN.get());
                 output.accept(LIME_SPRAY_CAN.get());
                 output.accept(GREEN_SPRAY_CAN.get());
                 output.accept(CYAN_SPRAY_CAN.get());
@@ -176,6 +191,7 @@ public class Create_Paint_and_Print
                 output.accept(PURPLE_SPRAY_CAN.get());
                 output.accept(MAGENTA_SPRAY_CAN.get());
                 output.accept(PINK_SPRAY_CAN.get());
+                output.accept(BUCKET_OF_PAINT_INGREDIENT.get());
             }).build());
 
     // The constructor for the mod class is the first code that is run when your mod is loaded.
@@ -191,7 +207,6 @@ public class Create_Paint_and_Print
         ITEMS.register(modEventBus);
         // Register the Deferred Register to the mod event bus so tabs get registered
         CREATIVE_MODE_TABS.register(modEventBus);
-
         // Register ourselves for server and other game events we are interested in.
         // Note that this is necessary if and only if we want *this* class (ExampleMod) to respond directly to events.
         // Do not add this line if there are no @SubscribeEvent-annotated functions in this class, like onServerStarting() below.
@@ -199,7 +214,7 @@ public class Create_Paint_and_Print
 
         // Register the item to a creative tab
         modEventBus.addListener(this::addCreative);
-
+        modEventBus.addListener(this::registerFluid);
         // Register our mod's ModConfigSpec so that FML can create and load the config file for us
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
