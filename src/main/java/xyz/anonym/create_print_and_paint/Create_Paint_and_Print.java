@@ -165,11 +165,6 @@ public class Create_Paint_and_Print {
             Item::new,
             new Item.Properties()
     );
-    public static final DeferredItem<Item> BUCKET_OF_PAINT_INGREDIENT = ITEMS.registerItem(
-            "bucket_of_paint_ingredient",
-            Item::new,
-            new Item.Properties()
-    );
     public static final FluidEntry<BaseFlowingFluid.Flowing> PAINT_INGREDIENT =
             REGISTRATE.standardFluid("paint_ingredient",
                            SolidRenderedPlaceableFluidType.create(0x622020,
@@ -181,6 +176,9 @@ public class Create_Paint_and_Print {
                             .tickRate(25)
                             .slopeFindDistance(3)
                             .explosionResistance(100f))
+                    .source(BaseFlowingFluid.Source::new)
+                    .bucket()
+                    .build()
                     .register();
 
     @SuppressWarnings("unused")
@@ -206,7 +204,6 @@ public class Create_Paint_and_Print {
                 output.accept(PURPLE_SPRAY_CAN.get());
                 output.accept(MAGENTA_SPRAY_CAN.get());
                 output.accept(PINK_SPRAY_CAN.get());
-                output.accept(BUCKET_OF_PAINT_INGREDIENT.get());
             }).build());
     static {
         REGISTRATE.setCreativeTab(CREATE_PRINT_AND_PAINT_CREATIVE_MODE_TAB);
