@@ -18,5 +18,7 @@
   "item.create_print_and_paint.light_blue_spray_can": "Light Blue Spray Can",
   "item.create_print_and_paint.purple_spray_can": "Purple Spray Can",
   "item.create_print_and_paint.magenta_spray_can": "Magenta Spray Can",
-  "item.create_print_and_paint.pink_spray_can": "Pink Spray Can"
+  "item.create_print_and_paint.pink_spray_can": "Pink Spray Can",
+  "fluid.create_print_and_paint.paint_ingredient": "Paint Ingredient",
+  "item.create_print_and_paint.paint_ingredient_bucket": "Bucket of Paint Ingredient"
 }

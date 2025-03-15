@@ -1,0 +1,12 @@
+{
+  "sources": [
+    {
+      "type": "single",
+      "resource": "create_print_and_paint:fluid/paint_ingredient_flow"
+    },
+    {
+      "type": "single",
+      "resource": "create_print_and_paint:fluid/paint_ingredient_still"
+    }
+  ]
+}

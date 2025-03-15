@@ -2,12 +2,10 @@ package xyz.anonym.create_print_and_paint;
 
 import com.mojang.blaze3d.shaders.FogShape;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.simibubi.create.AllTags;
 import com.simibubi.create.foundation.data.CreateRegistrate;
 import com.simibubi.create.foundation.item.ItemDescription;
 import com.simibubi.create.foundation.item.KineticStats;
 import com.simibubi.create.foundation.item.TooltipModifier;
-import com.simibubi.create.infrastructure.config.AllConfigs;
 import com.tterrag.registrate.builders.FluidBuilder;
 import com.tterrag.registrate.util.entry.FluidEntry;
 import net.createmod.catnip.lang.FontHelper;
@@ -16,12 +14,18 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.FogRenderer;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.material.*;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
@@ -51,12 +55,13 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 // The value here should match an entry in the META-INF/neoforge.mods.toml file
-@Mod(xyz.anonym.create_print_and_paint.Create_Paint_and_Print.MODID)
-public class Create_Paint_and_Print {
+@Mod(Create_Print_and_Paint.MODID)
+public class Create_Print_and_Paint {
     // Define mod id in a common place for everything to reference
     public static final String MODID = "create_print_and_paint";
     // Directly reference a slf4j logger
@@ -167,9 +172,8 @@ public class Create_Paint_and_Print {
     );
     public static final FluidEntry<BaseFlowingFluid.Flowing> PAINT_INGREDIENT =
             REGISTRATE.standardFluid("paint_ingredient",
-                           SolidRenderedPlaceableFluidType.create(0x622020,
+                           SolidRenderedPlaceableFluidType.create(0xFFFFFF,
                                     () -> 1f / 32f))
-                    .lang("Paint Ingredient")
                     .properties(b -> b.viscosity(1500)
                             .density(1400))
                     .fluidProperties(p -> p.levelDecreasePerBlock(2)
@@ -180,7 +184,6 @@ public class Create_Paint_and_Print {
                     .bucket()
                     .build()
                     .register();
-
     @SuppressWarnings("unused")
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> CREATE_PRINT_AND_PAINT_CREATIVE_MODE_TAB = CREATIVE_MODE_TABS.register("create_print_and_paint", () -> CreativeModeTab.builder()
             .title(Component.translatable("itemGroup.create_print_and_paint")) //The language key for the title of your CreativeModeTab
@@ -204,13 +207,14 @@ public class Create_Paint_and_Print {
                 output.accept(PURPLE_SPRAY_CAN.get());
                 output.accept(MAGENTA_SPRAY_CAN.get());
                 output.accept(PINK_SPRAY_CAN.get());
+                output.accept(PAINT_INGREDIENT.get().getBucket());
             }).build());
     static {
         REGISTRATE.setCreativeTab(CREATE_PRINT_AND_PAINT_CREATIVE_MODE_TAB);
     }
     // The constructor for the mod class is the first code that is run when your mod is loaded.
     // FML will recognize some parameter types like IEventBus or ModContainer and pass them in automatically.
-    public Create_Paint_and_Print(IEventBus modEventBus, ModContainer modContainer)
+    public Create_Print_and_Paint(IEventBus modEventBus, ModContainer modContainer)
     {
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
@@ -225,7 +229,7 @@ public class Create_Paint_and_Print {
         // Note that this is necessary if and only if we want *this* class (ExampleMod) to respond directly to events.
         // Do not add this line if there are no @SubscribeEvent-annotated functions in this class, like onServerStarting() below.
         NeoForge.EVENT_BUS.register(this);
-
+        NeoForgeMod.enableMilkFluid();
         // Register the item to a creative tab
         modEventBus.addListener(this::addCreative);
         // Register our mod's ModConfigSpec so that FML can create and load the config file for us
