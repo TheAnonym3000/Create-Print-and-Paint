@@ -243,7 +243,6 @@ public class Create_Print_and_Paint {
 
         if (Config.logDirtBlock)
             LOGGER.info("DIRT BLOCK >> {}", BuiltInRegistries.BLOCK.getKey(Blocks.DIRT));
-
     }
 
     // Add the example block item to the building blocks tab
