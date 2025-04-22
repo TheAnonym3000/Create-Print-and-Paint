@@ -2,11 +2,13 @@ package xyz.anonym.create_print_and_paint;
 
 import com.mojang.blaze3d.shaders.FogShape;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.simibubi.create.AllItems;
 import com.simibubi.create.foundation.data.CreateRegistrate;
 import com.simibubi.create.foundation.item.ItemDescription;
 import com.simibubi.create.foundation.item.KineticStats;
 import com.simibubi.create.foundation.item.TooltipModifier;
 import com.tterrag.registrate.builders.FluidBuilder;
+import com.tterrag.registrate.util.entry.BlockEntry;
 import com.tterrag.registrate.util.entry.FluidEntry;
 import net.createmod.catnip.lang.FontHelper;
 import net.createmod.catnip.theme.Color;
@@ -19,11 +21,18 @@ import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.item.*;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.material.*;
+import net.minecraft.world.level.storage.loot.entries.LootItem;
+import net.minecraft.world.level.storage.loot.functions.ApplyBonusCount;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.fluids.BaseFlowingFluid;
@@ -58,6 +67,9 @@ import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+
+import static com.simibubi.create.foundation.data.TagGen.pickaxeOnly;
+import static com.simibubi.create.foundation.data.TagGen.tagBlockAndItem;
 
 // The value here should match an entry in the META-INF/neoforge.mods.toml file
 @Mod(Create_Print_and_Paint.MODID)
@@ -170,6 +182,12 @@ public class Create_Print_and_Paint {
             Item::new,
             new Item.Properties()
     );
+    public static final DeferredItem<Item> RAW_ALUMINUM = ITEMS.registerItem(
+            "raw_aluminum",
+            Item::new,
+            new Item.Properties()
+    );
+
     public static final FluidEntry<BaseFlowingFluid.Flowing> PAINT_INGREDIENT =
             REGISTRATE.standardFluid("paint_ingredient",
                            SolidRenderedPlaceableFluidType.create(0xFFFFFF,
@@ -184,6 +202,28 @@ public class Create_Print_and_Paint {
                     .bucket()
                     .build()
                     .register();
+
+    public static final BlockEntry<Block> ALUMINUM_ORE = REGISTRATE.block("aluminum_ore", Block::new)
+            .initialProperties(() -> Blocks.IRON_ORE)
+            .properties(p -> p.mapColor(MapColor.METAL)
+                    .requiresCorrectToolForDrops()
+                    .sound(SoundType.STONE))
+            .transform(pickaxeOnly())
+            .loot((lt, b) ->  {
+                HolderLookup.RegistryLookup<Enchantment> enchantmentRegistryLookup = lt.getRegistries().lookupOrThrow(Registries.ENCHANTMENT);
+
+                lt.add(b,
+                        lt.createSilkTouchDispatchTable(b,
+                                lt.applyExplosionDecay(b, LootItem.lootTableItem(RAW_ALUMINUM.get())
+                                        .apply(ApplyBonusCount.addOreBonusCount(enchantmentRegistryLookup.getOrThrow(Enchantments.FORTUNE))))));
+            })
+            .tag(BlockTags.NEEDS_IRON_TOOL)
+            .tag(Tags.Blocks.ORES)
+            .transform(tagBlockAndItem("ores/aluminum", "ores_in_ground/stone"))
+            .tag(Tags.Items.ORES)
+            .build()
+            .register();
+
     @SuppressWarnings("unused")
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> CREATE_PRINT_AND_PAINT_CREATIVE_MODE_TAB = CREATIVE_MODE_TABS.register("create_print_and_paint", () -> CreativeModeTab.builder()
             .title(Component.translatable("itemGroup.create_print_and_paint")) //The language key for the title of your CreativeModeTab
@@ -208,6 +248,8 @@ public class Create_Print_and_Paint {
                 output.accept(MAGENTA_SPRAY_CAN.get());
                 output.accept(PINK_SPRAY_CAN.get());
                 output.accept(PAINT_INGREDIENT.get().getBucket());
+                output.accept(RAW_ALUMINUM.get());
+                output.accept(ALUMINUM_ORE.asItem());
             }).build());
     static {
         REGISTRATE.setCreativeTab(CREATE_PRINT_AND_PAINT_CREATIVE_MODE_TAB);
