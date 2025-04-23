@@ -93,13 +93,7 @@ public class Create_Print_and_Paint {
                     new ItemDescription.Modifier(item, FontHelper.Palette.STANDARD_CREATE)
                             .andThen(TooltipModifier.mapNull(KineticStats.create(item)))
             );
-    // Creates a new Block with the id "examplemod:example_block", combining the namespace and path
-    public static final DeferredBlock<Block> EXAMPLE_BLOCK = BLOCKS.registerSimpleBlock("example_block", BlockBehaviour.Properties.of().mapColor(MapColor.STONE));
-    // Creates a new BlockItem with the id "examplemod:example_block", combining the namespace and path
-    public static final DeferredItem<BlockItem> EXAMPLE_BLOCK_ITEM = ITEMS.registerSimpleBlockItem("example_block", EXAMPLE_BLOCK);
-    // Creates a new food item with the id "examplemod:example_id", nutrition 1 and saturation 2
-    public static final DeferredItem<Item> EXAMPLE_ITEM = ITEMS.registerSimpleItem("example_item", new Item.Properties().food(new FoodProperties.Builder()
-            .alwaysEdible().nutrition(1).saturationModifier(2f).build()));
+
     public static final DeferredItem<Item> EMPTY_CAN = ITEMS.registerItem(
             "empty_can",
             Item::new,
@@ -190,7 +184,11 @@ public class Create_Print_and_Paint {
             Item::new,
             new Item.Properties()
     );
-
+    public static final DeferredItem<Item> ALUMINUM_INGOT = ITEMS.registerItem(
+            "aluminum_ingot",
+            Item::new,
+            new Item.Properties()
+    );
     public static final FluidEntry<BaseFlowingFluid.Flowing> PAINT_INGREDIENT =
             REGISTRATE.standardFluid("paint_ingredient",
                            SolidRenderedPlaceableFluidType.create(0xFFFFFF,
@@ -253,6 +251,7 @@ public class Create_Print_and_Paint {
                 output.accept(PAINT_INGREDIENT.get().getBucket());
                 output.accept(RAW_ALUMINUM.get());
                 output.accept(ALUMINUM_ORE.asItem());
+                output.accept(ALUMINUM_INGOT.get());
             }).build());
     static {
         REGISTRATE.setCreativeTab(CREATE_PRINT_AND_PAINT_CREATIVE_MODE_TAB);
