@@ -15,5 +15,7 @@ public class DataGen {
         CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
 
         GeneratedEntriesProvider generatedEntriesProvider = new GeneratedEntriesProvider(output, lookupProvider);
+        lookupProvider = generatedEntriesProvider.getRegistryProvider();
+        generator.addProvider(event.includeServer(), generatedEntriesProvider);
     }
 }

@@ -16,7 +16,7 @@ import java.util.List;
 
 import static net.minecraft.data.worldgen.features.FeatureUtils.register;
 
-public class PaintedConfiguredFeatures {
+public class ConfiguredFeatures {
     public static final ResourceKey<ConfiguredFeature<?, ?>>
             ALUMINUM_ORE = key("aluminum_ore");
 
@@ -32,9 +32,7 @@ public class PaintedConfiguredFeatures {
 
         List<OreConfiguration.TargetBlockState> aluminumTargetStates = List.of(
                 OreConfiguration.target(stoneOreReplaceables, Create_Print_and_Paint.ALUMINUM_ORE.get()
-                        .defaultBlockState())//,
-//                OreConfiguration.target(deepslateOreReplaceables, AllBlocks.DEEPSLATE_ALUMINUM_ORE.get()
-//                      .defaultBlockState())
+                        .defaultBlockState())
         );
 
         register(ctx, ALUMINUM_ORE, Feature.ORE, new OreConfiguration(aluminumTargetStates, 12));
