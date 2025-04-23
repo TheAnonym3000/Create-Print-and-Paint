@@ -11,6 +11,7 @@ import net.minecraft.world.level.levelgen.feature.configurations.OreConfiguratio
 import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTest;
 import net.minecraft.world.level.levelgen.structure.templatesystem.TagMatchTest;
 import xyz.anonym.create_print_and_paint.Create_Print_and_Paint;
+import xyz.anonym.create_print_and_paint.registration.Blocks;
 
 import java.util.List;
 
@@ -31,7 +32,7 @@ public class ConfiguredFeatures {
         RuleTest deepslateOreReplaceables = new TagMatchTest(BlockTags.DEEPSLATE_ORE_REPLACEABLES);
 
         List<OreConfiguration.TargetBlockState> aluminumTargetStates = List.of(
-                OreConfiguration.target(stoneOreReplaceables, Create_Print_and_Paint.ALUMINUM_ORE.get()
+                OreConfiguration.target(stoneOreReplaceables, Blocks.ALUMINUM_ORE.get()
                         .defaultBlockState())
         );
 
