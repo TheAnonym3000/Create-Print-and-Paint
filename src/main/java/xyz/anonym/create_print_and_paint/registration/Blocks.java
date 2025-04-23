@@ -1,5 +1,6 @@
 package xyz.anonym.create_print_and_paint.registration;
 
+import com.simibubi.create.foundation.data.CreateRegistrate;
 import com.tterrag.registrate.util.entry.BlockEntry;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
@@ -12,12 +13,18 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.functions.ApplyBonusCount;
 import net.neoforged.neoforge.common.Tags;
+import org.jetbrains.annotations.NotNull;
 
 import static com.simibubi.create.foundation.data.TagGen.pickaxeOnly;
 import static com.simibubi.create.foundation.data.TagGen.tagBlockAndItem;
+import static xyz.anonym.create_print_and_paint.registration.Common.CREATE_PRINT_AND_PAINT_CREATIVE_MODE_TAB;
 
 public class Blocks {
-    public static final BlockEntry<Block> ALUMINUM_ORE = Fluids.REGISTRATE.block("aluminum_ore", Block::new)
+    private static final CreateRegistrate REGISTRATE = Common.REGISTRATE;
+    static {
+        REGISTRATE.setCreativeTab(CREATE_PRINT_AND_PAINT_CREATIVE_MODE_TAB);
+    }
+    public static final BlockEntry<Block> ALUMINUM_ORE = REGISTRATE.block("aluminum_ore", Block::new)
             .initialProperties(() -> net.minecraft.world.level.block.Blocks.GOLD_ORE)
             .properties(p -> p.mapColor(MapColor.METAL)
                     .requiresCorrectToolForDrops()

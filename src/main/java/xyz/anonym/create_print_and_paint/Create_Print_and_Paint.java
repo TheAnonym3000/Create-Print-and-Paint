@@ -18,7 +18,6 @@ import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import xyz.anonym.create_print_and_paint.data.DataGen;
 import xyz.anonym.create_print_and_paint.registration.Common;
-import xyz.anonym.create_print_and_paint.registration.Fluids;
 
 
 @Mod(Create_Print_and_Paint.MODID)
@@ -30,7 +29,7 @@ public class Create_Print_and_Paint {
     public Create_Print_and_Paint(IEventBus modEventBus, ModContainer modContainer)
     {
         modEventBus.addListener(this::commonSetup);
-        Fluids.REGISTRATE.registerEventListeners(modEventBus);
+        Common.REGISTRATE.registerEventListeners(modEventBus);
         Common.BLOCKS.register(modEventBus);
         Common.ITEMS.register(modEventBus);
         Common.CREATIVE_MODE_TABS.register(modEventBus);

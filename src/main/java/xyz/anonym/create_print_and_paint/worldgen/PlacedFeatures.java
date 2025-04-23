@@ -1,7 +1,7 @@
 package xyz.anonym.create_print_and_paint.worldgen;
 
 import static net.minecraft.data.worldgen.placement.PlacementUtils.register;
-import com.simibubi.create.infrastructure.worldgen.AllConfiguredFeatures;
+
 import com.simibubi.create.infrastructure.worldgen.ConfigPlacementFilter;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderGetter;

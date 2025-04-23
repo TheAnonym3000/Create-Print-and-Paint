@@ -1,0 +1,13 @@
+{
+  "type": "create:pressing",
+  "ingredients": [
+    {
+      "tag": "create_print_and_paint:aluminum_ingot"
+    }
+  ],
+  "results": [
+    {
+      "id": "create_print_and_paint:aluminum_sheet"
+    }
+  ]
+}

@@ -3,20 +3,14 @@ package xyz.anonym.create_print_and_paint.registration;
 import com.mojang.blaze3d.shaders.FogShape;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.simibubi.create.foundation.data.CreateRegistrate;
-import com.simibubi.create.foundation.item.ItemDescription;
-import com.simibubi.create.foundation.item.KineticStats;
-import com.simibubi.create.foundation.item.TooltipModifier;
 import com.tterrag.registrate.builders.FluidBuilder;
 import com.tterrag.registrate.util.entry.FluidEntry;
-import net.createmod.catnip.lang.FontHelper;
 import net.createmod.catnip.theme.Color;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.FogRenderer;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.material.FluidState;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
@@ -25,7 +19,6 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
-import xyz.anonym.create_print_and_paint.Create_Print_and_Paint;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -33,15 +26,12 @@ import java.util.function.Supplier;
 import static xyz.anonym.create_print_and_paint.registration.Common.CREATE_PRINT_AND_PAINT_CREATIVE_MODE_TAB;
 
 public class Fluids {
-    public static final CreateRegistrate REGISTRATE = CreateRegistrate.create(Create_Print_and_Paint.MODID)
-            .defaultCreativeTab((ResourceKey<CreativeModeTab>) null)
-            .setTooltipModifierFactory(item ->
-                    new ItemDescription.Modifier(item, FontHelper.Palette.STANDARD_CREATE)
-                            .andThen(TooltipModifier.mapNull(KineticStats.create(item)))
-            );
+    private static final CreateRegistrate REGISTRATE = Common.REGISTRATE;
+
     static {
-        Fluids.REGISTRATE.setCreativeTab(CREATE_PRINT_AND_PAINT_CREATIVE_MODE_TAB);
+        REGISTRATE.setCreativeTab(CREATE_PRINT_AND_PAINT_CREATIVE_MODE_TAB);
     }
+
     public static final FluidEntry<BaseFlowingFluid.Flowing> PAINT_INGREDIENT =
             REGISTRATE.standardFluid("paint_ingredient",
                            SolidRenderedPlaceableFluidType.create(0xFFFFFF,
