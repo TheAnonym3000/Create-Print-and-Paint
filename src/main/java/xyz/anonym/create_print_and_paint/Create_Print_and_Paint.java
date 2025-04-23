@@ -7,6 +7,7 @@ import com.simibubi.create.foundation.data.CreateRegistrate;
 import com.simibubi.create.foundation.item.ItemDescription;
 import com.simibubi.create.foundation.item.KineticStats;
 import com.simibubi.create.foundation.item.TooltipModifier;
+import com.simibubi.create.infrastructure.data.CreateDatagen;
 import com.tterrag.registrate.builders.FluidBuilder;
 import com.tterrag.registrate.util.entry.BlockEntry;
 import com.tterrag.registrate.util.entry.FluidEntry;
@@ -30,6 +31,7 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.material.*;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.functions.ApplyBonusCount;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.Tags;
@@ -63,6 +65,7 @@ import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
+import xyz.anonym.create_print_and_paint.data.DataGen;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
@@ -204,7 +207,7 @@ public class Create_Print_and_Paint {
                     .register();
 
     public static final BlockEntry<Block> ALUMINUM_ORE = REGISTRATE.block("aluminum_ore", Block::new)
-            .initialProperties(() -> Blocks.IRON_ORE)
+            .initialProperties(() -> Blocks.GOLD_ORE)
             .properties(p -> p.mapColor(MapColor.METAL)
                     .requiresCorrectToolForDrops()
                     .sound(SoundType.STONE))
@@ -276,6 +279,7 @@ public class Create_Print_and_Paint {
         modEventBus.addListener(this::addCreative);
         // Register our mod's ModConfigSpec so that FML can create and load the config file for us
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+        modEventBus.addListener(EventPriority.LOWEST, DataGen::gatherData);
     }
 
     private void commonSetup(final FMLCommonSetupEvent event)
