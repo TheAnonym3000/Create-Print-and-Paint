@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "create_print_and_paint:item/raw_aluminum"
+  }
+}
