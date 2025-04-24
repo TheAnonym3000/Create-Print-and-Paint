@@ -5,7 +5,7 @@ import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 public class Items {
-    
+    public static void init() {}
     private static final  DeferredRegister.Items ITEMS = Common.ITEMS;
     
     public static final DeferredItem<Item> EMPTY_CAN = ITEMS.registerItem(

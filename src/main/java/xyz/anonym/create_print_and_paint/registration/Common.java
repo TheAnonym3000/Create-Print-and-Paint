@@ -15,6 +15,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import xyz.anonym.create_print_and_paint.Create_Print_and_Paint;
 
 public class Common {
+    public static void init() {}
     public static final CreateRegistrate REGISTRATE = CreateRegistrate.create(Create_Print_and_Paint.MODID)
             .defaultCreativeTab((ResourceKey<CreativeModeTab>) null)
             .setTooltipModifierFactory(item ->

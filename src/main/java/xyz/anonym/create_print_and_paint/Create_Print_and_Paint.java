@@ -17,7 +17,10 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import xyz.anonym.create_print_and_paint.data.DataGen;
+import xyz.anonym.create_print_and_paint.registration.Blocks;
 import xyz.anonym.create_print_and_paint.registration.Common;
+import xyz.anonym.create_print_and_paint.registration.Fluids;
+import xyz.anonym.create_print_and_paint.registration.Items;
 
 
 @Mod(Create_Print_and_Paint.MODID)
@@ -26,8 +29,13 @@ public class Create_Print_and_Paint {
     public static final String MODID = "create_print_and_paint";
     private static final Logger LOGGER = LogUtils.getLogger();
 
+
     public Create_Print_and_Paint(IEventBus modEventBus, ModContainer modContainer)
     {
+        Blocks.init();
+        Fluids.init();
+        Items.init();
+        Common.init();
         modEventBus.addListener(this::commonSetup);
         Common.REGISTRATE.registerEventListeners(modEventBus);
         Common.BLOCKS.register(modEventBus);

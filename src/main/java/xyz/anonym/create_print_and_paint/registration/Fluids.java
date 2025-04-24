@@ -26,6 +26,7 @@ import java.util.function.Supplier;
 import static xyz.anonym.create_print_and_paint.registration.Common.CREATE_PRINT_AND_PAINT_CREATIVE_MODE_TAB;
 
 public class Fluids {
+    public static void init() {}
     private static final CreateRegistrate REGISTRATE = Common.REGISTRATE;
 
     static {

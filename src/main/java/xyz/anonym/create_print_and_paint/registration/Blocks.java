@@ -20,6 +20,7 @@ import static com.simibubi.create.foundation.data.TagGen.tagBlockAndItem;
 import static xyz.anonym.create_print_and_paint.registration.Common.CREATE_PRINT_AND_PAINT_CREATIVE_MODE_TAB;
 
 public class Blocks {
+    public static void init() {}
     private static final CreateRegistrate REGISTRATE = Common.REGISTRATE;
     static {
         REGISTRATE.setCreativeTab(CREATE_PRINT_AND_PAINT_CREATIVE_MODE_TAB);
